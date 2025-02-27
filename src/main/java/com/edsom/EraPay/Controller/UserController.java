@@ -2,6 +2,7 @@ package com.edsom.EraPay.Controller;
 
 import com.edsom.EraPay.Dtos.FundTransferDto;
 import com.edsom.EraPay.Dtos.UserRegDto;
+import com.edsom.EraPay.Dtos.UserUpdateDto;
 import com.edsom.EraPay.EasbuzzUtil.PaymentRequest;
 import com.edsom.EraPay.Service.EaseBuzzPayInService;
 import com.edsom.EraPay.Service.UserService;
@@ -22,10 +23,6 @@ public class UserController {
 
     @Autowired
     EaseBuzzPayInService easeBuzzPayInService;
-
-    @Autowired
-    EmailServiceImpl emailService;
-
 
     @GetMapping("/checkemail")
     public ResponseEntity<?> checkEmail(@RequestHeader String email) {
@@ -48,24 +45,29 @@ public class UserController {
         return userService.availablePan(pan);
     }
 
-    @GetMapping("/fundtransfer")
-    public ResponseEntity<?> checkPan(@RequestHeader String userid, FundTransferDto dto) {
+    @PostMapping("/fundtransfer")
+    public ResponseEntity<?> fundTransfer(@RequestHeader String userid, FundTransferDto dto) {
         return userService.fundTransfer(userid, dto);
     }
 
-    @GetMapping("/payin")
+    @PostMapping("/payin")
     public ResponseEntity<?> payIn(@RequestBody PaymentRequest req){
         return easeBuzzPayInService.initiatePayment(req);
-    }
-
-    @GetMapping("/contactUs")
-    public void contactUs() {
-        emailService.sendWelcomeEmail();
     }
 
     @PostMapping("/cardapply")
     public ResponseEntity<?> cardApply(@RequestHeader(value="cardtype") String cardtype, @RequestHeader(value="userid") String userid){
         return userService.cardApply(userid,cardtype);
+    }
+
+    @GetMapping("/payinreport")
+    public ResponseEntity<?> payIn(@RequestHeader(value="userid") String userid, @RequestHeader(value = "currPage") Integer currPage, @RequestHeader(value = "pageSize") Integer pageSize){
+        return userService.payinReports(userid,currPage,pageSize);
+    }
+
+    @PostMapping("/updateuser")
+    public ResponseEntity<?> updateProfile(@Valid @RequestBody UserUpdateDto dto){
+        return userService.updateUser(dto);
     }
 
 }

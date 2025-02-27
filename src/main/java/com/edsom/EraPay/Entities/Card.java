@@ -1,5 +1,6 @@
 package com.edsom.EraPay.Entities;
 
+import com.edsom.EraPay.Enums.CardNetwork;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
@@ -14,15 +15,24 @@ public class Card {
     Long id;
     String cardNumber;
     String cvv;
+    String name;
     LocalDate start;
     LocalDate end;
-    String cardNetwork;
+    CardNetwork cardNetwork;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
     private User user;
 
     public Card() {
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Long getId() {
@@ -73,11 +83,11 @@ public class Card {
         this.user = user;
     }
 
-    public String getCardNetwork() {
+    public CardNetwork getCardNetwork() {
         return cardNetwork;
     }
 
-    public void setCardNetwork(String cardNetwork) {
+    public void setCardNetwork(CardNetwork cardNetwork) {
         this.cardNetwork = cardNetwork;
     }
 

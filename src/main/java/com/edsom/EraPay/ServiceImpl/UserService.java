@@ -1,28 +1,26 @@
 package com.edsom.EraPay.ServiceImpl;
 
 import com.edsom.EraPay.Dtos.FundTransferDto;
-import com.edsom.EraPay.Dtos.UserRegDto;
+import com.edsom.EraPay.Dtos.UserUpdateDto;
 import com.edsom.EraPay.Entities.CardApply;
-import com.edsom.EraPay.Entities.Role;
+import com.edsom.EraPay.Entities.EasebuzzPayin;
 import com.edsom.EraPay.Entities.User;
-import com.edsom.EraPay.Enums.UserStatus;
 import com.edsom.EraPay.GlobalUtils.ResponseUtil;
 import com.edsom.EraPay.Repos.CardApplyRepo;
-import com.edsom.EraPay.Repos.RoleRepo;
+import com.edsom.EraPay.Repos.EasebuzzPayinRepo;
 import com.edsom.EraPay.Repos.UserRepo;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 
 import static com.edsom.EraPay.ServiceImpl.EmailServiceImpl.parseToken;
 
@@ -34,43 +32,13 @@ public class UserService implements com.edsom.EraPay.Service.UserService {
     UserRepo userRepo;
 
     @Autowired
-    RoleRepo roleRepo;
-
-    @Autowired
     CardApplyRepo cardApplyRepo;
 
     @Autowired
     private  PasswordEncoder passwordEncoder;
 
-    private String generateUserId(String adhaar) {
-        if (adhaar == null || adhaar.length() != 12 || !adhaar.matches("\\d{12}")) {
-            throw new IllegalArgumentException("Invalid Aadhaar number");
-        }
-
-        Random random = new Random();
-        int startIndex = random.nextInt(4); // Random index between 0 and 4 (inclusive)
-        String randomDigits = adhaar.substring(startIndex, startIndex + 6);
-        return "ERA" + randomDigits; // Prefix with "UID" (you can change it as needed)
-    }
-
-    @Override
-    public ResponseEntity<?> register(UserRegDto dto) {
-        String userid = generateUserId(dto.getAdhaar());
-        Optional<Role> roleOpt = roleRepo.findById(2);
-        Role role = roleOpt.get();
-        User checkUser = userRepo.findByEmailOrMobileOrAdhaarOrPan(dto.getEmail(), dto.getMobile(), dto.getAdhaar(), dto.getPan());
-        Map<String, Object> resp = new HashMap<>();
-        if (checkUser != null) {
-            resp.put("success", false);
-            resp.put("message", "User already present..!! Try resetting you password..");
-            return ResponseUtil.buildResponse("Constraint Violation: ", HttpStatus.NOT_ACCEPTABLE, Map.of("error", resp));
-        }
-        User newUser = new User(userid, dto.getName(), dto.getEmail(), dto.getPan(), dto.getMobile(), dto.getAdhaar(), UserStatus.ACTIVE, LocalDateTime.now(), dto.getDob(), dto.getWalletAddress(), 0.0, role);
-        User savedUser = userRepo.save(newUser);
-        resp.put("success", true);
-        resp.put("user", savedUser);
-        return ResponseUtil.buildResponse("User registered successfully.", HttpStatus.CREATED, Map.of("response", resp));
-    }
+    @Autowired
+    EasebuzzPayinRepo payinRepo;
 
     @Override
     public ResponseEntity<?> checkEmail(String email) {
@@ -228,12 +196,44 @@ public class UserService implements com.edsom.EraPay.Service.UserService {
             resp.put("success", true);
             resp.put("message", "Your request is Recorded..!!");
             return ResponseUtil.buildResponse("Success", HttpStatus.OK, Map.of("data", resp));
-
         }
-
         resp.put("success", false);
         resp.put("message", "User not Found..!!");
         return ResponseUtil.buildResponse("Something went wrong", HttpStatus.NOT_ACCEPTABLE, Map.of("error", resp));
+    }
+
+    @Override
+    public ResponseEntity<?> payinReports(String userid, Integer currPage, Integer pageSize) {
+        PageRequest pageRequest = PageRequest.of(currPage, pageSize);
+        Map<String, Object> resp = new HashMap<>();
+        User u = userRepo.findByUserId(userid);
+        Page<EasebuzzPayin> list = payinRepo.findByUser(u, pageRequest);
+        resp.put("success", true);
+        resp.put("data", list);
+        return ResponseUtil.buildResponse("Success", HttpStatus.OK, resp);
+    }
+
+    @Override
+    public ResponseEntity<?> updateUser(UserUpdateDto dto) {
+        Map<String, Object> resp = new HashMap<>();
+        User u = userRepo.findByUserId(dto.getUserid());
+        u.setName(dto.getName());
+        u.setAdhaar(dto.getAdhaar());
+        u.setPan(dto.getPan());
+        u.setEmail(dto.getEmail());
+        u.setMobile(dto.getMobile());
+        u.setDob(dto.getDob());
+        u.setWalletAddress(dto.getWalletAddress());
+        try {
+            User savedUser = userRepo.save(u);
+            resp.put("success", true);
+            resp.put("data", savedUser);
+            return ResponseUtil.buildResponse("User Updated SuccessFully..!!", HttpStatus.OK, resp);
+        } catch (Exception e) {
+            resp.put("success", false);
+            resp.put("error", e.getLocalizedMessage());
+            return ResponseUtil.buildResponse("Something went wrong..!!", HttpStatus.NOT_ACCEPTABLE, resp);
+        }
     }
 
 }

@@ -2,11 +2,12 @@ package com.edsom.EraPay.Service;
 
 import com.edsom.EraPay.Dtos.FundTransferDto;
 import com.edsom.EraPay.Dtos.UserRegDto;
+import com.edsom.EraPay.Dtos.UserUpdateDto;
 import org.springframework.http.ResponseEntity;
 
 public interface UserService {
 
-    ResponseEntity<?> register(UserRegDto dto);
+
     ResponseEntity<?> checkEmail(String email);
     ResponseEntity<?> availableEmail(String email);
     ResponseEntity<?> availableMobile(String mobile);
@@ -17,4 +18,6 @@ public interface UserService {
 
     void resetPassword(String token, String newPassword);
     ResponseEntity<?> cardApply(String userid, String cardtype);
+    ResponseEntity<?> payinReports(String userid, Integer currPage, Integer pageSize);
+    ResponseEntity<?> updateUser(UserUpdateDto dto);
 }

@@ -6,7 +6,6 @@ import com.edsom.EraPay.Repos.RoleRepo;
 import com.edsom.EraPay.Repos.UserRepo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +26,6 @@ public class EmailServiceImpl{
     @Autowired
     UserRepo userRepo;
 
-    @Autowired
-    RoleRepo roleRepo;
-
 
     @Value("${spring.mail.username}")
     private String fromEmail;
@@ -39,22 +35,17 @@ public class EmailServiceImpl{
 
     private static final Logger log = LoggerFactory.getLogger(EmailServiceImpl.class);
 
-private final static Key SECRET_KEY=Keys.hmacShaKeyFor("hjdsbhsbhjskjnbhjsjhsbhjsbhjsbhbshsbhjsbhjxbshbhbshbshbhsbshgshavhgsvghsvhgsvbhdshbdhsbdhbhjsbhjsa".getBytes(StandardCharsets.UTF_8));
+    private final static Key SECRET_KEY = Keys.hmacShaKeyFor("hjdsbhsbhjskjnbhjsjhsbhjsbhjsbhbshsbhjsbhjxbshbhbshbshbhsbshgshavhgsvghsvhgsvbhdshbdhsbdhbhjsbhjsa".getBytes(StandardCharsets.UTF_8));
 
 
+    public void sendWelcomeEmail(User user) {
 
-
-    public void sendWelcomeEmail() {
-
-        User user=userRepo.findByEmail("rahul.sharma@example.com");
         String token = generateResetToken(user);
 
         // Password reset link (Frontend URL)
         String resetLink = "http://localhost:5173/reset-password?token=" + token;
 
-
-
-        String subject = "Enquiry from Ipaisa";
+        String subject = "\uD83D\uDE80 Welcome to Erapay! Secure Your Account Now";
         String text = "Hi " + user.getName() + ",\n\n" +
                 "Welcome to Erapay! We're excited to have you on board.\n\n" +
                 "Please set your password by clicking the link below:\n" +
@@ -64,20 +55,20 @@ private final static Key SECRET_KEY=Keys.hmacShaKeyFor("hjdsbhsbhjskjnbhjsjhsbhj
                 "The Erapay Team";
 
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo("ashishdhanorkar28@gmail.com");  // Now dynamically set from properties
+        message.setTo(user.getEmail());  // Now dynamically set from properties
         message.setSubject(subject);
         message.setText(text);
         message.setFrom(fromEmail);
 
         try {
             mailSender.send(message);
-            log.info("Enquiry email sent successfully to {}", supportEmail);
+            log.info("Enquiry email sent successfully from {}", fromEmail);
         } catch (Exception e) {
 
             System.out.println("----"+e.getMessage());
             System.out.println(e.getCause().getMessage());
 
-            log.error("Failed to send enquiry email to {}: {}", supportEmail, e.getMessage(), e);
+            log.error("Failed to send enquiry email from {}: {}", fromEmail, e.getMessage(), e);
         }
     }
 

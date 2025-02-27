@@ -19,7 +19,7 @@ public class AuthController {
     private AuthService authService;
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @PostMapping("/signin")
     public ResponseEntity<?> signIn(@RequestBody SignInDto signInDto)

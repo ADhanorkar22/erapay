@@ -46,6 +46,16 @@ public class User {
         this.password="null";
     }
 
+    public User(String name, String email, String pan, String mobile, String adhaar, String walletAddress, LocalDate dob) {
+        this.name = name;
+        this.email = email;
+        this.pan = pan;
+        this.mobile = mobile;
+        this.adhaar = adhaar;
+        this.walletAddress = walletAddress;
+        this.dob = dob;
+    }
+
     public String getUserId() {
         return userId;
     }
