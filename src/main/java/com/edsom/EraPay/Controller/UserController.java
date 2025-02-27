@@ -2,23 +2,29 @@ package com.edsom.EraPay.Controller;
 
 import com.edsom.EraPay.Dtos.FundTransferDto;
 import com.edsom.EraPay.Dtos.UserRegDto;
-import com.edsom.EraPay.EasbuzzUtil.PaymentRequest;
-import com.edsom.EraPay.Service.EaseBuzzPayInService;
+import com.edsom.EraPay.Service.EmailServiceImpl;
 import com.edsom.EraPay.Service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/auth")
 public class UserController {
+
+
+
+
+    @Autowired
+    private EmailServiceImpl emailService;
+
+
 
     @Autowired
     UserService userService;
-
-    @Autowired
-    EaseBuzzPayInService easeBuzzPayInService;
 
     @GetMapping("/hello")
     public String systemCheck() {
@@ -60,8 +66,18 @@ public class UserController {
         return userService.fundTransfer(userid, dto);
     }
 
-    @GetMapping("/payin")
-    public ResponseEntity<?> payIn(@RequestBody PaymentRequest req){
-        return easeBuzzPayInService.initiatePayment(req);
+    @GetMapping("/contactUs")
+    public void contactUs() {
+
+        emailService.sendWelcomeEmail();
     }
+
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody Map<String,String> data) {
+        System.out.println(data);
+        userService.resetPassword(data.get("token"), data.get("newPassword"));
+        return ResponseEntity.ok("Password successfully reset.");
+    }
+
 }

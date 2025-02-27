@@ -8,9 +8,12 @@ import com.edsom.EraPay.Enums.UserStatus;
 import com.edsom.EraPay.GlobalUtils.ResponseUtil;
 import com.edsom.EraPay.Repos.RoleRepo;
 import com.edsom.EraPay.Repos.UserRepo;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,6 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+
+import static com.edsom.EraPay.Service.EmailServiceImpl.parseToken;
+
 
 @Service
 public class UserService implements com.edsom.EraPay.Service.UserService {
@@ -27,6 +33,9 @@ public class UserService implements com.edsom.EraPay.Service.UserService {
 
     @Autowired
     RoleRepo roleRepo;
+
+    @Autowired
+    private  PasswordEncoder passwordEncoder;
 
     private String generateUserId(String adhaar) {
         if (adhaar == null || adhaar.length() != 12 || !adhaar.matches("\\d{12}")) {
@@ -178,6 +187,23 @@ public class UserService implements com.edsom.EraPay.Service.UserService {
     public ResponseEntity<?> sendOtpFundTransfer(String userid) {
         return null;
     }
+
+    @Override
+    public void resetPassword(String token, String newPassword) {
+        System.out.println("token is ====>"+token);
+        Claims claims = parseToken(token);
+        String userId = claims.get("userId", String.class);
+        System.out.println("userId is ====>"+userId);
+        String email = claims.get("email", String.class);
+        System.out.println("email is ====>"+email);
+
+        User user= userRepo.findByEmail(email);
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepo.save(user);
+
+    }
+
 }
 
 

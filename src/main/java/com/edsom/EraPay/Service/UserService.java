@@ -14,4 +14,6 @@ public interface UserService {
     ResponseEntity<?> availableAdhaar(String adhaar);
     ResponseEntity<?> fundTransfer(String userid, FundTransferDto dto);
     ResponseEntity<?> sendOtpFundTransfer(String userid);
+
+    void resetPassword(String token, String newPassword);
 }
