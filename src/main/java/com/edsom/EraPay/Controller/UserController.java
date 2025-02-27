@@ -2,8 +2,10 @@ package com.edsom.EraPay.Controller;
 
 import com.edsom.EraPay.Dtos.FundTransferDto;
 import com.edsom.EraPay.Dtos.UserRegDto;
-import com.edsom.EraPay.Service.EmailServiceImpl;
+import com.edsom.EraPay.EasbuzzUtil.PaymentRequest;
+import com.edsom.EraPay.Service.EaseBuzzPayInService;
 import com.edsom.EraPay.Service.UserService;
+import com.edsom.EraPay.ServiceImpl.EmailServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,37 +14,22 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/user")
 public class UserController {
-
-
-
-
-    @Autowired
-    private EmailServiceImpl emailService;
-
-
 
     @Autowired
     UserService userService;
 
-    @GetMapping("/hello")
-    public String systemCheck() {
-        return "Yess Hello..!!";
-    }
+    @Autowired
+    EaseBuzzPayInService easeBuzzPayInService;
 
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody UserRegDto dto) {
-        return userService.register(dto);
-    }
+    @Autowired
+    EmailServiceImpl emailService;
 
-    @GetMapping("/checkpassword")
-    public ResponseEntity<?> checkPassword(@RequestHeader String email) {
-        return userService.checkEmail(email);
-    }
 
     @GetMapping("/checkemail")
     public ResponseEntity<?> checkEmail(@RequestHeader String email) {
+        System.out.println(email);
         return userService.availableEmail(email);
     }
 
@@ -66,18 +53,19 @@ public class UserController {
         return userService.fundTransfer(userid, dto);
     }
 
+    @GetMapping("/payin")
+    public ResponseEntity<?> payIn(@RequestBody PaymentRequest req){
+        return easeBuzzPayInService.initiatePayment(req);
+    }
+
     @GetMapping("/contactUs")
     public void contactUs() {
-
         emailService.sendWelcomeEmail();
     }
 
-
-    @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestBody Map<String,String> data) {
-        System.out.println(data);
-        userService.resetPassword(data.get("token"), data.get("newPassword"));
-        return ResponseEntity.ok("Password successfully reset.");
+    @PostMapping("/cardapply")
+    public ResponseEntity<?> cardApply(@RequestHeader(value="cardtype") String cardtype, @RequestHeader(value="userid") String userid){
+        return userService.cardApply(userid,cardtype);
     }
 
 }

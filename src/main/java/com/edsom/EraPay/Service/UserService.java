@@ -16,4 +16,5 @@ public interface UserService {
     ResponseEntity<?> sendOtpFundTransfer(String userid);
 
     void resetPassword(String token, String newPassword);
+    ResponseEntity<?> cardApply(String userid, String cardtype);
 }

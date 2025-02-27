@@ -1,9 +1,11 @@
 package com.edsom.EraPay.ServiceImpl;
 
+import com.edsom.EraPay.Entities.CardApply;
 import com.edsom.EraPay.Entities.User;
 import com.edsom.EraPay.Enums.UserStatus;
 import com.edsom.EraPay.Enums.UserType;
 import com.edsom.EraPay.GlobalUtils.ResponseUtil;
+import com.edsom.EraPay.Repos.CardApplyRepo;
 import com.edsom.EraPay.Repos.UserRepo;
 import com.edsom.EraPay.Service.Admin;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +24,11 @@ public class Adminimpl implements Admin {
     @Autowired
     UserRepo userRepo;
 
+    @Autowired
+    CardApplyRepo applyRepo;
+
     @Override
     public ResponseEntity<?> userList(String userid, Integer currPage, Integer pageSize) {
-
         Optional<User> user = userRepo.findById(userid);
         if (user.isPresent()) {
             User currUser = user.get();
@@ -45,7 +49,6 @@ public class Adminimpl implements Admin {
         resp.put("success", false);
         resp.put("message", "User not Found..!!");
         return ResponseUtil.buildResponse("Something went wrong", HttpStatus.NOT_ACCEPTABLE, Map.of("error", resp));
-
     }
 
     @Override
@@ -70,5 +73,15 @@ public class Adminimpl implements Admin {
         resp.put("success", false);
         resp.put("message", "User not Found..!!");
         return ResponseUtil.buildResponse("Something went wrong", HttpStatus.NOT_ACCEPTABLE, Map.of("error", resp));
+    }
+
+    @Override
+    public ResponseEntity<?> allCardApplications(Integer currPage, Integer pageSize) {
+        PageRequest pageRequest = PageRequest.of(currPage,pageSize);
+        Page<CardApply> list = applyRepo.findAll(pageRequest);
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("success", true);
+        resp.put("data", list);
+        return ResponseUtil.buildResponse("success", HttpStatus.OK, resp);
     }
 }

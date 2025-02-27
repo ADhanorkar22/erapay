@@ -2,10 +2,12 @@ package com.edsom.EraPay.ServiceImpl;
 
 import com.edsom.EraPay.Dtos.FundTransferDto;
 import com.edsom.EraPay.Dtos.UserRegDto;
+import com.edsom.EraPay.Entities.CardApply;
 import com.edsom.EraPay.Entities.Role;
 import com.edsom.EraPay.Entities.User;
 import com.edsom.EraPay.Enums.UserStatus;
 import com.edsom.EraPay.GlobalUtils.ResponseUtil;
+import com.edsom.EraPay.Repos.CardApplyRepo;
 import com.edsom.EraPay.Repos.RoleRepo;
 import com.edsom.EraPay.Repos.UserRepo;
 import io.jsonwebtoken.Claims;
@@ -22,7 +24,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
-import static com.edsom.EraPay.Service.EmailServiceImpl.parseToken;
+import static com.edsom.EraPay.ServiceImpl.EmailServiceImpl.parseToken;
 
 
 @Service
@@ -33,6 +35,9 @@ public class UserService implements com.edsom.EraPay.Service.UserService {
 
     @Autowired
     RoleRepo roleRepo;
+
+    @Autowired
+    CardApplyRepo cardApplyRepo;
 
     @Autowired
     private  PasswordEncoder passwordEncoder;
@@ -202,6 +207,33 @@ public class UserService implements com.edsom.EraPay.Service.UserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepo.save(user);
 
+    }
+
+    @Override
+    public ResponseEntity<?> cardApply(String userid, String cardtype) {
+        Map<String, Object> resp = new HashMap<>();
+        Optional<User> user = userRepo.findById(userid);
+        if (user.isPresent()) {
+            User currUser = user.get();
+            CardApply checkApply = cardApplyRepo.findByUser(currUser);
+            if(checkApply != null){
+                resp.put("success", false);
+                resp.put("message", "Your request is  "+checkApply.getStatus());
+                return ResponseUtil.buildResponse("Request Already Present..!!", HttpStatus.OK, Map.of("error", resp));
+            }
+            CardApply apply = new CardApply();
+            apply.setApplyFor(cardtype);
+            apply.setUser(currUser);
+            cardApplyRepo.save(apply);
+            resp.put("success", true);
+            resp.put("message", "Your request is Recorded..!!");
+            return ResponseUtil.buildResponse("Success", HttpStatus.OK, Map.of("data", resp));
+
+        }
+
+        resp.put("success", false);
+        resp.put("message", "User not Found..!!");
+        return ResponseUtil.buildResponse("Something went wrong", HttpStatus.NOT_ACCEPTABLE, Map.of("error", resp));
     }
 
 }
