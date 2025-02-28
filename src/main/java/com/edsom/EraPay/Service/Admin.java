@@ -5,7 +5,7 @@ import com.edsom.EraPay.Enums.CardStatus;
 import org.springframework.http.ResponseEntity;
 
 public interface Admin {
-    public ResponseEntity<?> userList(String userid, Integer currPage, Integer pageSize);
+    public ResponseEntity<?> userList(Integer currPage, Integer pageSize,String searchBy);
     public ResponseEntity<?> allUsersBalance(String userid);
     ResponseEntity<?> allCardApplications(Integer currPage, Integer pageSize);
     ResponseEntity<?> changeApplicationStatus(CardStatus status, String userId);

@@ -18,6 +18,10 @@ import java.util.Map;
 @RequestMapping("/user")
 public class UserController {
 
+
+    @Autowired
+    private EmailServiceImpl emailService;
+
     @Autowired
     UserService userService;
 

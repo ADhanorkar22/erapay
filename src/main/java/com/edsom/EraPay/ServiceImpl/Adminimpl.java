@@ -16,7 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
+import jakarta.persistence.criteria.*;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import org.springframework.data.jpa.domain.Specification;
 
 @Service
 public class Adminimpl implements Admin {
@@ -82,27 +83,60 @@ public class Adminimpl implements Admin {
     }
 
     @Override
-    public ResponseEntity<?> userList(String userid, Integer currPage, Integer pageSize) {
-        Optional<User> user = userRepo.findById(userid);
-        if (user.isPresent()) {
-            User currUser = user.get();
-            System.out.println(currUser);
+    public ResponseEntity<?> userList(Integer currPage, Integer pageSize,String searchBy) {
+
+        try {
+            Specification<User> spec = searchByValue(searchBy);
             Map<String, Object> resp = new HashMap<>();
-            if (!UserType.ADMIN.equals(currUser.getRole().getUserType())) {
-                resp.put("success", false);
-                resp.put("message", "User not Authorized..!!");
-                return ResponseUtil.buildResponse("Constraint Violation: ", HttpStatus.NOT_ACCEPTABLE, Map.of("error", resp));
-            }
+
             PageRequest pageRequest = PageRequest.of(currPage, pageSize); // Create pagination request
-            Page<User> userList = userRepo.findAll(pageRequest);
+            Page<User> userList = userRepo.findAll(spec,pageRequest);
             resp.put("success", true);
             resp.put("data", userList);
             return ResponseUtil.buildResponse("success", HttpStatus.OK, resp);
+        }catch (Exception e) {
+            Map<String, Object> resp = new HashMap<>();
+            resp.put("success", false);
+            resp.put("message", "User not Found..!!");
+
+            return ResponseUtil.buildResponse("Something went wrong", HttpStatus.NOT_ACCEPTABLE, Map.of("error", resp));
         }
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("success", false);
-        resp.put("message", "User not Found..!!");
-        return ResponseUtil.buildResponse("Something went wrong", HttpStatus.NOT_ACCEPTABLE, Map.of("error", resp));
+
+
+    }
+
+    public  Specification<User> searchByValue(String searchValue) {
+        return (Root<User> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
+            if (searchValue == null || searchValue.isEmpty()) {
+                return criteriaBuilder.conjunction(); // No filter applied
+            }
+
+            String likePattern = "%" + searchValue + "%";
+
+            try {
+                // Try to convert searchValue to Double for wallet field
+                Double walletValue = Double.parseDouble(searchValue);
+                return criteriaBuilder.or(
+                        criteriaBuilder.like(root.get("userId"), likePattern),
+                        criteriaBuilder.like(root.get("name"), likePattern),
+                        criteriaBuilder.like(root.get("email"), likePattern),
+                        criteriaBuilder.like(root.get("mobile"), likePattern),
+                        criteriaBuilder.like(root.get("adhaar"), likePattern),
+                        criteriaBuilder.like(root.get("walletAddress"), likePattern),
+                        criteriaBuilder.equal(root.get("wallet"), walletValue) // Exact match for Double
+                );
+            } catch (NumberFormatException e) {
+                // If not a number, only perform LIKE searches
+                return criteriaBuilder.or(
+                        criteriaBuilder.like(root.get("userId"), likePattern),
+                        criteriaBuilder.like(root.get("name"), likePattern),
+                        criteriaBuilder.like(root.get("email"), likePattern),
+                        criteriaBuilder.like(root.get("mobile"), likePattern),
+                        criteriaBuilder.like(root.get("adhaar"), likePattern),
+                        criteriaBuilder.like(root.get("walletAddress"), likePattern)
+                );
+            }
+        };
     }
 
     @Override

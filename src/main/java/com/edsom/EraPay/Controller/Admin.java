@@ -19,8 +19,8 @@ public class Admin {
     UserService userService;
 
     @GetMapping("/users")
-    public ResponseEntity<?> userList(@RequestHeader(value = "userid") String userid, @RequestHeader(value = "currPage") Integer currPage, @RequestHeader(value = "pageSize") Integer pageSize) {
-        return adminService.userList(userid, currPage, pageSize);
+    public ResponseEntity<?> userList(@RequestHeader(value = "currPage") Integer currPage, @RequestHeader(value = "pageSize") Integer pageSize, @RequestHeader(value = "searchBy", required = false) String searchBy) {
+        return adminService.userList(currPage, pageSize,searchBy);
     }
 
     @GetMapping("/allusersbalance")
