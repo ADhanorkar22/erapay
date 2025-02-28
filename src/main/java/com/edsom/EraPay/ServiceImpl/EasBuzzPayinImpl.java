@@ -73,8 +73,7 @@ public class EasBuzzPayinImpl implements EaseBuzzPayInService {
                         return ResponseUtil.buildResponse("Something Went Worng",HttpStatus.BAD_REQUEST,Map.of("error",respSend));
                     }
                     respSend.put("success", true);
-                    respSend.put("message","Order created..!!");
-                    respSend.put("date",responseString);
+                    respSend.put("data",responseString);
                     return ResponseUtil.buildResponse("Success",HttpStatus.OK,respSend);
                 }
             } catch (Exception e) {

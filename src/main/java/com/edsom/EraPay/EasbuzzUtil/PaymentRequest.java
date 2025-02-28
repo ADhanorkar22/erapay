@@ -7,7 +7,6 @@ public class PaymentRequest {
     private String productinfo;
     private String surl;
     private String furl;
-    private String clientId;
     private static String show_payment_mode="NB,CC,DC";
 
     public String getUserid() {
@@ -63,15 +62,6 @@ public class PaymentRequest {
         this.furl = furl;
     }
 
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
-
     @Override
     public String toString() {
         return "PaymentRequest{" +
@@ -81,7 +71,6 @@ public class PaymentRequest {
                 ", productinfo='" + productinfo + '\'' +
                 ", surl='" + surl + '\'' +
                 ", furl='" + furl + '\'' +
-                ", clientId='" + clientId + '\'' +
                 '}';
     }
 }
