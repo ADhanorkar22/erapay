@@ -25,6 +25,4 @@ public interface UserService {
     ResponseEntity<?> fetchBalance(String userid);
     ResponseEntity<?> myInfo(String userid);
     ResponseEntity<?> myCard(String userid);
-    ResponseEntity<?> forgetPassword(String email);
-    ResponseEntity<?>getUsersCount();
 }

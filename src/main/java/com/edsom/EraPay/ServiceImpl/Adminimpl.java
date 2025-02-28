@@ -71,9 +71,7 @@ public class Adminimpl implements Admin {
         }
         User newUser = new User(userid, dto.getName(), dto.getEmail(), dto.getPan(), dto.getMobile(), dto.getAdhaar(), UserStatus.ACTIVE, LocalDateTime.now(), dto.getDob(), dto.getWalletAddress(), 0.0, role);
         User savedUser = userRepo.save(newUser);
-
-
-        emailService.sendWelcomeEmail(savedUser,"register");
+        emailService.sendWelcomeEmail(savedUser);
         CardType cardType = new CardType();
         cardType.setPhysical(false);
         cardType.setVirtual(false);

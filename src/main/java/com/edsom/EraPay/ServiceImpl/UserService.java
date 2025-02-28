@@ -46,9 +46,6 @@ public class UserService implements com.edsom.EraPay.Service.UserService {
     @Autowired
     CardRepo cardRepo;
 
-    @Autowired
-    EmailServiceImpl emailService;
-
     @Override
     public ResponseEntity<?> checkEmail(String email) {
         try {
@@ -276,53 +273,6 @@ public class UserService implements com.edsom.EraPay.Service.UserService {
         resp.put("success", true);
         resp.put("card", card);
         return ResponseUtil.buildResponse("Card Found", HttpStatus.OK, resp);
-    }
-
-    @Override
-    public ResponseEntity<?> forgetPassword(String email) {
-
-        Map<String, Object> resp=null;
-        try {
-          resp  = new HashMap<>();
-            Optional<User> u = Optional.ofNullable(userRepo.findByEmail(email));
-
-            if (u.isPresent()) {
-                User user = u.get();
-                 emailService.sendWelcomeEmail(user,"forget");
-            } else {
-                return ResponseEntity.ok(ResponseUtil.buildResponse(
-                        "No account found with this email address.",
-                        HttpStatus.NOT_FOUND,
-                        null
-                ));
-            }
-
-
-        }
-        catch (Exception e) {
-            resp.put("success", false);
-            resp.put("error", e.getLocalizedMessage());
-            return ResponseUtil.buildResponse("Something went wrong..!!", HttpStatus.NOT_ACCEPTABLE, resp);
-        }
-        return ResponseEntity.ok(ResponseUtil.buildResponse(
-                "Password reset link has been sent to your email. Please check your inbox.",
-                HttpStatus.OK,
-                null
-        ));
-    }
-
-    @Override
-    public ResponseEntity<?> getUsersCount() {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            long count = userRepo.count();
-            response.put("count", count);
-            return ResponseUtil.buildResponse("User count retrieved successfully", HttpStatus.OK, response);
-        } catch (Exception ex) {
-
-            response.put("error", "An unexpected error occurred. Please try again later.");
-            return ResponseUtil.buildResponse("Failed to fetch user count", HttpStatus.INTERNAL_SERVER_ERROR, response);
-        }
     }
 
 }

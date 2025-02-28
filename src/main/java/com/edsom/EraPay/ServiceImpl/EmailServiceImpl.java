@@ -58,7 +58,7 @@ public class EmailServiceImpl{
 
         } else if("forget".equals(purpose)){
             String token = generateResetToken(user);
-            String resetLink = "http://localhost:5173/reset-password?token=" + token;
+            String resetLink = "https://https://test.erapay.biz/reset?token=" + token;
             subject = "\uD83D\uDE80  Reset Your Password - Erapay";
             text = "Hi " + user.getName() + ",\n\n" +
                     "We received a request to reset your password for your Erapay account.\n" +
