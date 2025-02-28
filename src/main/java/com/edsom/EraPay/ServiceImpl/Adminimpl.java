@@ -149,6 +149,22 @@ public class Adminimpl implements Admin {
         return ResponseUtil.buildResponse("Data Fetched..!!", HttpStatus.OK, resp);
     }
 
+    @Override
+    public ResponseEntity<?> allCards(Integer currPage, Integer pageSize) {
+        PageRequest pageRequest = PageRequest.of(currPage,pageSize,Sort.by(Sort.Direction.DESC,"id"));
+        Page<Card> list = cardRepo.findAll(pageRequest);
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("success", true);
+        resp.put("data", list);
+        return ResponseUtil.buildResponse("Data Fetched..!!", HttpStatus.OK, resp);
+    }
+
+    @Override
+    public ResponseEntity<?> updateUserWallet(String userid) {
+
+        return null;
+    }
+
     // Generate a random 16-digit card number (Luhn Algorithm is not applied here)
     private String generateCardNumber(CardNetwork network) {
         StringBuilder cardNumber = new StringBuilder(); // Start with '4' for Visa

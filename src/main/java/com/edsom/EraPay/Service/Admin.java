@@ -11,4 +11,6 @@ public interface Admin {
     ResponseEntity<?> changeApplicationStatus(CardStatus status, String userId);
     ResponseEntity<?> register(UserRegDto dto);
     ResponseEntity<?> allPayinReport(Integer currPage, Integer pageSize);
+    ResponseEntity<?> allCards(Integer currPage, Integer pageSize);
+    ResponseEntity<?> updateUserWallet(String userid);
 }

@@ -47,4 +47,12 @@ public class Admin {
     public ResponseEntity<?> allPayinReport(@RequestHeader(value = "currPage") Integer currPage, @RequestHeader(value = "pageSize") Integer pageSize){
         return adminService.allPayinReport(currPage,pageSize);
     }
+
+    @GetMapping("/allcards")
+    public ResponseEntity<?> allCards(@RequestHeader(value = "currPage") Integer currPage, @RequestHeader(value = "pageSize") Integer pageSize){
+        return adminService.allCards(currPage,pageSize);
+    }
+
+    @PostMapping("/updateuserwallet")
+
 }
