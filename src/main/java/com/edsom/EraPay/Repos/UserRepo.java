@@ -18,4 +18,7 @@ public interface UserRepo extends JpaRepository<User, String> , JpaSpecification
     User findByEmailOrMobileOrAdhaarOrPan(String email, String mobile, String adhaar, String pan);
     @Query("SELECT COALESCE(SUM(u.wallet), 0) FROM User u")
     Double getTotalWalletBalance();
+
+    @Override
+     long count();
 }

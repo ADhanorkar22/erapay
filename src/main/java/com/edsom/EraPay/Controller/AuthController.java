@@ -43,4 +43,10 @@ public class AuthController {
         userService.resetPassword(data.get("token"), data.get("newPassword"));
         return ResponseEntity.ok("Password successfully reset.");
     }
+
+    @PostMapping(path="/forget-password")
+    public ResponseEntity<?>forgetPassword(@RequestHeader String email) {
+        return userService.forgetPassword(email);
+    }
+
 }

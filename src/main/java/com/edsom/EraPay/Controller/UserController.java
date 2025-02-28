@@ -89,4 +89,9 @@ public class UserController {
         return userService.myCard(userid);
     }
 
+
+@GetMapping(path="/getcount")
+    public ResponseEntity<?>getUsersCount(){
+    return userService.getUsersCount();
+}
 }

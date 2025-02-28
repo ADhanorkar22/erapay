@@ -38,22 +38,37 @@ public class EmailServiceImpl{
     private final static Key SECRET_KEY = Keys.hmacShaKeyFor("hjdsbhsbhjskjnbhjsjhsbhjsbhjsbhbshsbhjsbhjxbshbhbshbshbhsbshgshavhgsvghsvhgsvbhdshbdhsbdhbhjsbhjsa".getBytes(StandardCharsets.UTF_8));
 
 
-    public void sendWelcomeEmail(User user) {
+    public void sendWelcomeEmail(User user, String purpose ) {
+        String text=null;
+        String subject=null;
+        if("register".equals(purpose)) {
+            String token = generateResetToken(user);
 
-        String token = generateResetToken(user);
+            // Password reset link (Frontend URL)
+            String resetLink = "http://localhost:5173/reset-password?token=" + token;
 
-        // Password reset link (Frontend URL)
-        String resetLink = "http://localhost:5173/reset-password?token=" + token;
+            subject = "\uD83D\uDE80 Welcome to Erapay! Secure Your Account Now";
+          text = "Hi " + user.getName() + ",\n\n" +
+                    "Welcome to Erapay! We're excited to have you on board.\n\n" +
+                    "Please set your password by clicking the link below:\n" +
+                    resetLink + "\n\n" +
+                    "If you have any questions, feel free to reach out to our support team.\n\n" +
+                    "Best regards,\n" +
+                    "The Erapay Team";
 
-        String subject = "\uD83D\uDE80 Welcome to Erapay! Secure Your Account Now";
-        String text = "Hi " + user.getName() + ",\n\n" +
-                "Welcome to Erapay! We're excited to have you on board.\n\n" +
-                "Please set your password by clicking the link below:\n" +
-                resetLink + "\n\n" +
-                "If you have any questions, feel free to reach out to our support team.\n\n" +
-                "Best regards,\n" +
-                "The Erapay Team";
+        } else if("forget".equals(purpose)){
+            String token = generateResetToken(user);
+            String resetLink = "http://localhost:5173/reset-password?token=" + token;
+            subject = "\uD83D\uDE80  Reset Your Password - Erapay";
+            text = "Hi " + user.getName() + ",\n\n" +
+                    "We received a request to reset your password for your Erapay account.\n" +
+                    "Please click the link below to set a new password:\n\n" +
+                    resetLink + "\n\n" +
+                    "If you didn't request a password reset, you can safely ignore this email.\n" +
+                    "For any assistance, feel free to contact our support team.\n\n" +
+                    "Best regards,\nThe Erapay Team";
 
+        }
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(user.getEmail());  // Now dynamically set from properties
         message.setSubject(subject);
