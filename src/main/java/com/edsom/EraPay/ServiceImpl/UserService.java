@@ -2,11 +2,13 @@ package com.edsom.EraPay.ServiceImpl;
 
 import com.edsom.EraPay.Dtos.FundTransferDto;
 import com.edsom.EraPay.Dtos.UserUpdateDto;
+import com.edsom.EraPay.Entities.Card;
 import com.edsom.EraPay.Entities.CardApply;
 import com.edsom.EraPay.Entities.EasebuzzPayin;
 import com.edsom.EraPay.Entities.User;
 import com.edsom.EraPay.GlobalUtils.ResponseUtil;
 import com.edsom.EraPay.Repos.CardApplyRepo;
+import com.edsom.EraPay.Repos.CardRepo;
 import com.edsom.EraPay.Repos.EasebuzzPayinRepo;
 import com.edsom.EraPay.Repos.UserRepo;
 import io.jsonwebtoken.Claims;
@@ -18,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -39,6 +42,9 @@ public class UserService implements com.edsom.EraPay.Service.UserService {
 
     @Autowired
     EasebuzzPayinRepo payinRepo;
+
+    @Autowired
+    CardRepo cardRepo;
 
     @Override
     public ResponseEntity<?> checkEmail(String email) {
@@ -252,6 +258,21 @@ public class UserService implements com.edsom.EraPay.Service.UserService {
         resp.put("success", true);
         resp.put("user", user);
         return ResponseUtil.buildResponse("User Fetched SuccessFully..!!", HttpStatus.OK, resp);
+    }
+
+    @Override
+    public ResponseEntity<?> myCard(String userid) {
+        User user = userRepo.findByUserId(userid);
+        Card card = cardRepo.findByUser(user);
+        Map<String, Object> resp = new HashMap<>();
+        if (card == null){
+            resp.put("success", false);
+            resp.put("error", "Please Apply for Card First..!!");
+            return ResponseUtil.buildResponse("No Card Found", HttpStatus.OK, resp);
+        }
+        resp.put("success", true);
+        resp.put("card", card);
+        return ResponseUtil.buildResponse("Card Found", HttpStatus.OK, resp);
     }
 
 }

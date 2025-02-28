@@ -13,9 +13,8 @@ public class CardApply {
     String applyFor;
     @Enumerated(EnumType.STRING)
     CardStatus status;
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
     private User user;
 
     public CardApply() {

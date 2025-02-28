@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EasebuzzPayinRepo extends JpaRepository<EasebuzzPayin, String> {
     Page<EasebuzzPayin> findByUser(User u, Pageable pageRequest);
+    EasebuzzPayin findByTxnid(String txnid);
 }

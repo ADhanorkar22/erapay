@@ -5,6 +5,8 @@ import com.edsom.EraPay.Dtos.UserRegDto;
 import com.edsom.EraPay.Dtos.UserUpdateDto;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Map;
+
 public interface UserService {
 
 
@@ -22,4 +24,5 @@ public interface UserService {
     ResponseEntity<?> updateUser(UserUpdateDto dto);
     ResponseEntity<?> fetchBalance(String userid);
     ResponseEntity<?> myInfo(String userid);
+    ResponseEntity<?> myCard(String userid);
 }

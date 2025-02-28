@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @PostMapping("/fundtransfer")
-    public ResponseEntity<?> fundTransfer(@RequestHeader String userid, FundTransferDto dto) {
+    public ResponseEntity<?> fundTransfer(@RequestHeader String userid, @RequestBody FundTransferDto dto) {
         return userService.fundTransfer(userid, dto);
     }
 
@@ -77,7 +77,12 @@ public class UserController {
 
     @GetMapping("/mydetails")
     public ResponseEntity<?> fetchMyInfo(@RequestHeader(value="userid") String userid){
-        return userService.fetchBalance(userid);
+        return userService.myInfo(userid);
+    }
+
+    @GetMapping("/mycard")
+    public ResponseEntity<?> myCard(@RequestHeader(value="userid") String userid){
+        return userService.myCard(userid);
     }
 
 }
