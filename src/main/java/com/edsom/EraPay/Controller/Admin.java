@@ -33,13 +33,13 @@ public class Admin {
         return adminService.register(dto);
     }
 
-    @GetMapping("/allcardapplies")
+    @GetMapping("/allcardapply")
     public ResponseEntity<?> allCardApplication(@RequestHeader(value = "currPage") Integer currPage, @RequestHeader(value = "pageSize") Integer pageSize) {
         return adminService.allCardApplications(currPage, pageSize);
     }
 
     @PutMapping("/changeapplicationstatus")
-    public ResponseEntity<?> changeApplicationStatus(@RequestHeader(value = "status") CardStatus status, @RequestHeader(value = "userId") String userId) {
+    public ResponseEntity<?> changeApplicationStatus(@RequestHeader(value = "status") CardStatus status, @RequestHeader(value = "userid") String userId) {
         return adminService.changeApplicationStatus(status, userId);
     }
 

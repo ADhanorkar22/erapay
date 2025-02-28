@@ -19,9 +19,8 @@ public class Card {
     LocalDate start;
     LocalDate end;
     CardNetwork cardNetwork;
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
     private User user;
 
     public Card() {

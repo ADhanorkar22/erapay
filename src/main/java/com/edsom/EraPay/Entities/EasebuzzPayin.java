@@ -97,9 +97,8 @@ public class EasebuzzPayin {
     @Column(name="txn_settelment")
     private String settlement;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
     private User user;
 
     public EasebuzzPayin() {
