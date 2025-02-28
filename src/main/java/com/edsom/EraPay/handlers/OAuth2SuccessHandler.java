@@ -48,7 +48,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         if (user==null){
             System.out.println("hbdshbdshbdsuhdnshndsbhjdbshjdsb");
 
-            String frontEndUrl = "https://www.ipaisa.co.in/signin"
+            String frontEndUrl = "http://localhost:3000/notregistered"
                     ;
             response.sendRedirect(frontEndUrl);
             return;
@@ -63,7 +63,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //        cookie.setSecure("production".equals(deployEnv));
 //        response.addCookie(cookie);
 
-        String frontEndUrl = "http://localhost:8080/home.html?token=" + token +
+        String frontEndUrl = "http://localhost:3000/dashboard?token=" + token +
                 "&emp_role=" + user.getRole().getUserType().toString() +
                 "&status=" + user.getStatus() +
                 "&emp_name=" + user.getName() +
