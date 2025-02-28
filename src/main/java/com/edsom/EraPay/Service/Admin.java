@@ -12,5 +12,5 @@ public interface Admin {
     ResponseEntity<?> register(UserRegDto dto);
     ResponseEntity<?> allPayinReport(Integer currPage, Integer pageSize);
     ResponseEntity<?> allCards(Integer currPage, Integer pageSize);
-    ResponseEntity<?> updateUserWallet(String userid);
+    ResponseEntity<?> updateUserWallet(String userid, double amount);
 }

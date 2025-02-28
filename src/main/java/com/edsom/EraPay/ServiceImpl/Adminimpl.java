@@ -160,9 +160,15 @@ public class Adminimpl implements Admin {
     }
 
     @Override
-    public ResponseEntity<?> updateUserWallet(String userid) {
-
-        return null;
+    public ResponseEntity<?> updateUserWallet(String userid,double amount) {
+        User user = userRepo.findByUserId(userid);
+        double currentBalance = user.getWallet();
+        double newbalance = currentBalance+amount;
+        user.setWallet(newbalance);
+        userRepo.save(user);
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("success", true);
+        return ResponseUtil.buildResponse("Wallet Updated", HttpStatus.OK, resp);
     }
 
     // Generate a random 16-digit card number (Luhn Algorithm is not applied here)
@@ -237,6 +243,14 @@ public class Adminimpl implements Admin {
         if (user.isPresent()) {
             User currUser = user.get();
             CardApply cardApply = applyRepo.findByUser(currUser);
+            if (cardApply.getApplyFor().equals("PHYSICAL") && currUser.getWallet()<101){
+                resp.put("success", false);
+                return ResponseUtil.buildResponse("User Wallet is Low..!!", HttpStatus.NOT_ACCEPTABLE, resp);
+            }
+            if (cardApply.getApplyFor().equals("VIRTUAL") && currUser.getWallet()<11){
+                resp.put("success", false);
+                return ResponseUtil.buildResponse("User Wallet is Low..!!", HttpStatus.NOT_ACCEPTABLE, resp);
+            }
             if (cardApply.getStatus().equals(CardStatus.COMPLETED)) {
                 resp.put("success", false);
                 resp.put("message", "Your Request is already Completed");
@@ -253,11 +267,15 @@ public class Adminimpl implements Admin {
                         type.setVirtual(true);
                         type.setPhysical(true);
                         typeRepo.save(type);
+                        currUser.setWallet(currUser.getWallet()-101);
+                        userRepo.save(currUser);
                     }
                     if (cardApply.getApplyFor().equals("VIRTUAL")) {
                         CardType type = typeRepo.findByUser(currUser);
                         type.setVirtual(true);
                         typeRepo.save(type);
+                        currUser.setWallet(currUser.getWallet()-11);
+                        userRepo.save(currUser);
                     }
                     applyRepo.delete(cardApply);
                 } else {

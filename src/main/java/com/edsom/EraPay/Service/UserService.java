@@ -20,4 +20,6 @@ public interface UserService {
     ResponseEntity<?> cardApply(String userid, String cardtype);
     ResponseEntity<?> payinReports(String userid, Integer currPage, Integer pageSize);
     ResponseEntity<?> updateUser(UserUpdateDto dto);
+    ResponseEntity<?> fetchBalance(String userid);
+    ResponseEntity<?> myInfo(String userid);
 }

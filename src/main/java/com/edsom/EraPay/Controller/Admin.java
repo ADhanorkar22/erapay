@@ -34,25 +34,29 @@ public class Admin {
     }
 
     @GetMapping("/allcardapplies")
-    public ResponseEntity<?> allCardApplication(@RequestHeader(value = "currPage") Integer currPage, @RequestHeader(value = "pageSize") Integer pageSize){
-        return adminService.allCardApplications(currPage,pageSize);
+    public ResponseEntity<?> allCardApplication(@RequestHeader(value = "currPage") Integer currPage, @RequestHeader(value = "pageSize") Integer pageSize) {
+        return adminService.allCardApplications(currPage, pageSize);
     }
 
     @PutMapping("/changeapplicationstatus")
-    public ResponseEntity<?> changeApplicationStatus(@RequestHeader(value = "status") CardStatus status, @RequestHeader(value = "userId") String userId){
-        return adminService.changeApplicationStatus(status,userId);
+    public ResponseEntity<?> changeApplicationStatus(@RequestHeader(value = "status") CardStatus status, @RequestHeader(value = "userId") String userId) {
+        return adminService.changeApplicationStatus(status, userId);
     }
 
     @GetMapping("/allpayin")
-    public ResponseEntity<?> allPayinReport(@RequestHeader(value = "currPage") Integer currPage, @RequestHeader(value = "pageSize") Integer pageSize){
-        return adminService.allPayinReport(currPage,pageSize);
+    public ResponseEntity<?> allPayinReport(@RequestHeader(value = "currPage") Integer currPage, @RequestHeader(value = "pageSize") Integer pageSize) {
+        return adminService.allPayinReport(currPage, pageSize);
     }
 
     @GetMapping("/allcards")
-    public ResponseEntity<?> allCards(@RequestHeader(value = "currPage") Integer currPage, @RequestHeader(value = "pageSize") Integer pageSize){
-        return adminService.allCards(currPage,pageSize);
+    public ResponseEntity<?> allCards(@RequestHeader(value = "currPage") Integer currPage, @RequestHeader(value = "pageSize") Integer pageSize) {
+        return adminService.allCards(currPage, pageSize);
     }
 
     @PostMapping("/updateuserwallet")
+    public ResponseEntity<?> updateUser(@RequestHeader(value = "userid") String userid, @RequestHeader(value = "amount") Double amount) {
+        return  adminService.updateUserWallet(userid,amount);
+    }
+
 
 }

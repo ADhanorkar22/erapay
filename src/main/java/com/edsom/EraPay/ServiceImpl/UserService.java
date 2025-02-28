@@ -236,6 +236,24 @@ public class UserService implements com.edsom.EraPay.Service.UserService {
         }
     }
 
+    @Override
+    public ResponseEntity<?> fetchBalance(String userid) {
+        User user = userRepo.findByUserId(userid);
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("success", true);
+        resp.put("balance", user.getWallet());
+        return ResponseUtil.buildResponse("Balance Fetched SuccessFully..!!", HttpStatus.OK, resp);
+    }
+
+    @Override
+    public ResponseEntity<?> myInfo(String userid) {
+        User user = userRepo.findByUserId(userid);
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("success", true);
+        resp.put("user", user);
+        return ResponseUtil.buildResponse("User Fetched SuccessFully..!!", HttpStatus.OK, resp);
+    }
+
 }
 
 

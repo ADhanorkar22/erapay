@@ -70,4 +70,14 @@ public class UserController {
         return userService.updateUser(dto);
     }
 
+    @GetMapping("/fetchbalance")
+    public ResponseEntity<?> fetchBalane(@RequestHeader(value="userid") String userid){
+        return userService.fetchBalance(userid);
+    }
+
+    @GetMapping("/mydetails")
+    public ResponseEntity<?> fetchMyInfo(@RequestHeader(value="userid") String userid){
+        return userService.fetchBalance(userid);
+    }
+
 }
