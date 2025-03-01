@@ -18,7 +18,7 @@ public interface UserService {
     ResponseEntity<?> fundTransfer(String userid, FundTransferDto dto);
     ResponseEntity<?> sendOtpFundTransfer(String userid);
 
-    void resetPassword(String token, String newPassword);
+    ResponseEntity<?> resetPassword(String token, String newPassword);
     ResponseEntity<?> cardApply(String userid, String cardtype);
     ResponseEntity<?> payinReports(String userid, Integer currPage, Integer pageSize);
     ResponseEntity<?> updateUser(UserUpdateDto dto);

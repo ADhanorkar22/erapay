@@ -171,7 +171,7 @@ public class UserService implements com.edsom.EraPay.Service.UserService {
     }
 
     @Override
-    public void resetPassword(String token, String newPassword) {
+    public ResponseEntity<?> resetPassword(String token, String newPassword) {
         System.out.println("token is ====>"+token);
         Claims claims = parseToken(token);
         String userId = claims.get("userId", String.class);
@@ -183,7 +183,9 @@ public class UserService implements com.edsom.EraPay.Service.UserService {
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepo.save(user);
-
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("success", true);
+        return ResponseUtil.buildResponse("Password Reset Successfull", HttpStatus.OK,resp);
     }
 
     @Override
