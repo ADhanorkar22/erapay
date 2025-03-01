@@ -48,7 +48,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         if (user==null){
             System.out.println("hbdshbdshbdsuhdnshndsbhjdbshjdsb");
 
-            String frontEndUrl = "http://localhost:3000/notregistered"
+            String frontEndUrl = "https://test.erapay.biz/notregistered"
                     ;
             response.sendRedirect(frontEndUrl);
             return;
@@ -63,7 +63,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //        cookie.setSecure("production".equals(deployEnv));
 //        response.addCookie(cookie);
 
-        String frontEndUrl = "http://localhost:3000/dashboard?token=" + token +
+        String frontEndUrl = "https://test.erapay.biz/dashboard?token=" + token +
                 "&emp_role=" + user.getRole().getUserType().toString() +
                 "&status=" + user.getStatus() +
                 "&emp_name=" + user.getName() +
