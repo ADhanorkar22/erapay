@@ -3,6 +3,7 @@ package com.edsom.EraPay.Security;
 
 import com.edsom.EraPay.handlers.OAuth2SuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,6 +34,9 @@ public class SecurityConfig {
     private JwtRequestFilter jwtRequestFilter;
     @Autowired
     private OAuth2SuccessHandler oAuth2SuccessHandler;
+
+    @Value("${frontend.url}")
+    private String url;
 
 
     @Bean
@@ -69,7 +73,7 @@ public class SecurityConfig {
 
           .oauth2Login(oauth2Config -> oauth2Config
 
-                  .defaultSuccessUrl("http://localhost:3000/home", true)
+                  .defaultSuccessUrl(url+"/home", true)
                 .failureUrl("/login?error=true")
                 .successHandler(oAuth2SuccessHandler)
         );

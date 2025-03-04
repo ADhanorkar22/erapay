@@ -28,9 +28,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Autowired
     UserRepo userService;
 
-
     @Autowired
     JwtUtils jwtUtils;
+
+    @Value("${frontend.url}")
+    private String url;
+
+
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -48,7 +52,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         if (user==null){
             System.out.println("hbdshbdshbdsuhdnshndsbhjdbshjdsb");
 
-            String frontEndUrl = "https://test.erapay.biz/notregistered"
+            String frontEndUrl = url+"/notregistered"
                     ;
             response.sendRedirect(frontEndUrl);
             return;
@@ -63,7 +67,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 //        cookie.setSecure("production".equals(deployEnv));
 //        response.addCookie(cookie);
 
-        String frontEndUrl = "https://test.erapay.biz/dashboard?token=" + token +
+        String frontEndUrl = url+"/dashboard?token=" + token +
                 "&emp_role=" + user.getRole().getUserType().toString() +
                 "&status=" + user.getStatus() +
                 "&emp_name=" + user.getName() +
