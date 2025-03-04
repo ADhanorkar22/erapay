@@ -28,11 +28,6 @@ public class Admin {
         return adminService.allUsersBalance(userid);
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody UserRegDto dto) {
-        return adminService.register(dto);
-    }
-
     @GetMapping("/allcardapply")
     public ResponseEntity<?> allCardApplication(@RequestHeader(value = "currPage") Integer currPage, @RequestHeader(value = "pageSize") Integer pageSize) {
         return adminService.allCardApplications(currPage, pageSize);

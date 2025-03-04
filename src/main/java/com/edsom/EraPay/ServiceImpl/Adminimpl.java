@@ -59,9 +59,6 @@ public class Adminimpl implements Admin {
 
     @Override
     public ResponseEntity<?> register(UserRegDto dto) {
-        String userid = generateUserId(dto.getAdhaar());
-        Optional<Role> roleOpt = roleRepo.findById(2);
-        Role role = roleOpt.get();
         User checkUser = userRepo.findByEmailOrMobileOrAdhaarOrPan(dto.getEmail(), dto.getMobile(), dto.getAdhaar(), dto.getPan());
         Map<String, Object> resp = new HashMap<>();
         if (checkUser != null) {
@@ -69,19 +66,20 @@ public class Adminimpl implements Admin {
             resp.put("message", "User already present..!! Try resetting you password..");
             return ResponseUtil.buildResponse("Constraint Violation: ", HttpStatus.NOT_ACCEPTABLE, Map.of("error", resp));
         }
+        String userid = generateUserId(dto.getAdhaar());
+        Optional<Role> roleOpt = roleRepo.findById(2);
+        Role role = roleOpt.get();
         User newUser = new User(userid, dto.getName(), dto.getEmail(), dto.getPan(), dto.getMobile(), dto.getAdhaar(), UserStatus.ACTIVE, LocalDateTime.now(), dto.getDob(), dto.getWalletAddress(), 0.0, role);
         User savedUser = userRepo.save(newUser);
-
-
-        emailService.sendWelcomeEmail(savedUser,"register");
         CardType cardType = new CardType();
         cardType.setPhysical(false);
         cardType.setVirtual(false);
         cardType.setUser(savedUser);
         typeRepo.save(cardType);
+        emailService.sendWelcomeEmail(savedUser,"register");
         resp.put("success", true);
         resp.put("data", savedUser);
-        return ResponseUtil.buildResponse("User registered successfully.", HttpStatus.CREATED, resp);
+        return ResponseUtil.buildResponse("Registration Completed... Check Email Inbox or try login using Google...", HttpStatus.CREATED, resp);
     }
 
     @Override

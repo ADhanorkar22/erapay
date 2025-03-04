@@ -113,4 +113,12 @@ public class UserController {
     public ResponseEntity<?>getUsersCount(){
     return userService.getUsersCount();
 }
+
+    @PostMapping("/depositcoins")
+    public ResponseEntity<?> depositCoins(@RequestHeader("Authorization") String token, @Valid @RequestBody UserUpdateDto dto){
+        String t = token.substring(7);
+        Claims claims = jwtUtils.extractAllClaims(t);
+        String userid = claims.get("userid", String.class);
+        return userService.updateUser(dto);
+    }
 }

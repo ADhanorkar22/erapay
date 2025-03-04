@@ -45,21 +45,23 @@ public class EmailServiceImpl{
             String token = generateResetToken(user);
 
             // Password reset link (Frontend URL)
-            String resetLink = "http://localhost:5173/reset-password?token=" + token;
+            String resetLink = "https://test.erapay.biz/reset?token=" + token;
 
             subject = "\uD83D\uDE80 Welcome to Erapay! Secure Your Account Now";
           text = "Hi " + user.getName() + ",\n\n" +
                     "Welcome to Erapay! We're excited to have you on board.\n\n" +
                     "Please set your password by clicking the link below:\n" +
                     resetLink + "\n\n" +
+                    "Or" + "\n\n" +
+                    "You can also login using Registered Google Account" + "\n\n" +
                     "If you have any questions, feel free to reach out to our support team.\n\n" +
                     "Best regards,\n" +
                     "The Erapay Team";
 
         } else if("forget".equals(purpose)){
             String token = generateResetToken(user);
-            String resetLink = "http://localhost:5173/reset-password?token=" + token;
-            subject = "\uD83D\uDE80  Reset Your Password - Erapay";
+            String resetLink = "https://test.erapay.biz/reset?token=" + token;
+            subject = "\uD83D\uDD11 Reset Your Password - Erapay";
             text = "Hi " + user.getName() + ",\n\n" +
                     "We received a request to reset your password for your Erapay account.\n" +
                     "Please click the link below to set a new password:\n\n" +
@@ -93,7 +95,7 @@ public class EmailServiceImpl{
         String token = generateResetToken(user);
 
         // Password reset link (Frontend URL)
-        String resetLink = "http://localhost:5173/reset-password?token=" + token;
+        String resetLink = "https://test.erapay.biz/reset?token=" + token;
 
 
 

@@ -25,9 +25,6 @@ public class UserRegDto {
     @Pattern(regexp = "\\d{12}", message = "Aadhaar must be a 12-digit number")
     private String adhaar;
 
-    @NotBlank(message = "Status cannot be blank")
-    private String status;
-
     @PastOrPresent(message = "Created date cannot be in the future")
     private LocalDateTime createdAt;
 
@@ -80,14 +77,6 @@ public class UserRegDto {
         this.adhaar = adhaar;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -120,7 +109,6 @@ public class UserRegDto {
                 ", pan='" + pan + '\'' +
                 ", mobile='" + mobile + '\'' +
                 ", adhaar='" + adhaar + '\'' +
-                ", status='" + status + '\'' +
                 ", createdAt=" + createdAt +
                 ", dob=" + dob +
                 ", walletAddress='" + walletAddress + '\'' +

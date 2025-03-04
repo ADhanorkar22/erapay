@@ -9,7 +9,9 @@ public class CardType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    @Column(name = "is_virtual") // Escape 'virtual' column
     boolean virtual;
+    @Column(name = "is_physical") // Escape if 'physical' is a keyword
     boolean physical;
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
