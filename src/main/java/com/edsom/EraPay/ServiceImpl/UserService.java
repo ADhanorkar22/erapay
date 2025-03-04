@@ -1,26 +1,26 @@
 package com.edsom.EraPay.ServiceImpl;
 
+import com.edsom.EraPay.Dtos.DepositCoinsDto;
 import com.edsom.EraPay.Dtos.FundTransferDto;
 import com.edsom.EraPay.Dtos.UserUpdateDto;
-import com.edsom.EraPay.Entities.Card;
-import com.edsom.EraPay.Entities.CardApply;
-import com.edsom.EraPay.Entities.EasebuzzPayin;
-import com.edsom.EraPay.Entities.User;
+import com.edsom.EraPay.Entities.*;
+import com.edsom.EraPay.Enums.DepositStaus;
 import com.edsom.EraPay.GlobalUtils.ResponseUtil;
-import com.edsom.EraPay.Repos.CardApplyRepo;
-import com.edsom.EraPay.Repos.CardRepo;
-import com.edsom.EraPay.Repos.EasebuzzPayinRepo;
-import com.edsom.EraPay.Repos.UserRepo;
+import com.edsom.EraPay.Repos.*;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -48,6 +48,9 @@ public class UserService implements com.edsom.EraPay.Service.UserService {
 
     @Autowired
     EmailServiceImpl emailService;
+
+    @Autowired
+    DepositCoinsRepo depositRepo;
 
     @Override
     public ResponseEntity<?> checkEmail(String email) {
@@ -325,6 +328,41 @@ public class UserService implements com.edsom.EraPay.Service.UserService {
             response.put("error", "An unexpected error occurred. Please try again later.");
             return ResponseUtil.buildResponse("Failed to fetch user count", HttpStatus.INTERNAL_SERVER_ERROR, response);
         }
+    }
+
+    @Override
+    public ResponseEntity<?> depositCoins(String userid, DepositCoinsDto dto, String url) {
+        Map<String, Object> resp = new HashMap<>();
+        try {
+            User user = userRepo.findByUserId(userid);
+            Instant instant = Instant.now();
+            LocalDateTime dateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+            // Formatting the LocalDateTime to include date, time, and microseconds
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSSSSS");
+            String formattedDateTime = dateTime.format(formatter);
+            String id = user.getUserId() + formattedDateTime;
+            DepositCoins depositCoins = new DepositCoins(id, dto.getCoins(), dto.getDepositTime(), dto.getDepositedFromWallet(), DepositStaus.PROCESSING, url, user);
+            DepositCoins saved = depositRepo.save(depositCoins);
+            resp.put("success", true);
+            resp.put("record", saved);
+            return ResponseUtil.buildResponse("", HttpStatus.OK, resp);
+        } catch (Exception e) {
+            resp.put("success", false);
+            resp.put("error", e.getLocalizedMessage());
+            return ResponseUtil.buildResponse("Something went wrong", HttpStatus.BAD_REQUEST, resp);
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> myDeposits(String userid, Integer currPage, Integer pageSize) {
+        User user = userRepo.findByUserId(userid);
+        PageRequest pageRequest = PageRequest.of(currPage, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+        Page<DepositCoins> list = depositRepo.findByUser(user, pageRequest);
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("success", true);
+        resp.put("data", list);
+        return ResponseUtil.buildResponse("Data Fetched",HttpStatus.OK,resp);
     }
 
 }

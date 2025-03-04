@@ -1,8 +1,10 @@
 package com.edsom.EraPay.Controller;
 
+import com.edsom.EraPay.Dtos.DepositCoinsDto;
 import com.edsom.EraPay.Dtos.FundTransferDto;
 import com.edsom.EraPay.Dtos.UserUpdateDto;
 import com.edsom.EraPay.EasbuzzUtil.PaymentRequest;
+import com.edsom.EraPay.GlobalUtils.ResponseUtil;
 import com.edsom.EraPay.Security.JwtUtils;
 import com.edsom.EraPay.Service.EaseBuzzPayInService;
 import com.edsom.EraPay.Service.UserService;
@@ -10,8 +12,18 @@ import com.edsom.EraPay.ServiceImpl.EmailServiceImpl;
 import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/user")
@@ -29,6 +41,9 @@ public class UserController {
 
     @Autowired
     JwtUtils jwtUtils;
+
+    private static final String UPLOADED_FOLDER = "uploads/tickets/";
+    private Long ticketId;
 
     @GetMapping("/checkemail")
     public ResponseEntity<?> checkEmail(@RequestHeader String email) {
@@ -115,10 +130,37 @@ public class UserController {
 }
 
     @PostMapping("/depositcoins")
-    public ResponseEntity<?> depositCoins(@RequestHeader("Authorization") String token, @Valid @RequestBody UserUpdateDto dto){
+    public ResponseEntity<?> depositCoins(@RequestHeader("Authorization") String token, @Valid @RequestBody DepositCoinsDto depositDto,
+                                          @RequestPart("screenshot") MultipartFile file) {
         String t = token.substring(7);
         Claims claims = jwtUtils.extractAllClaims(t);
         String userid = claims.get("userid", String.class);
-        return userService.updateUser(dto);
+        try {
+            File directory = new File(UPLOADED_FOLDER);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+            // Get the file name and path
+            String fileName = file.getOriginalFilename();
+            Path uploadbankReceipt = Paths.get(UPLOADED_FOLDER + fileName); // Save the file to the specified
+
+            // Save file path
+            Files.write(uploadbankReceipt, file.getBytes());
+
+            return userService.depositCoins(userid, depositDto, fileName);
+        } catch (Exception e) {
+            Map<String, Object> resp = new HashMap<>();
+            resp.put("success", false);
+            resp.put("error", e.getLocalizedMessage());
+            return ResponseUtil.buildResponse("Something went wrong..!!", HttpStatus.INTERNAL_SERVER_ERROR, resp);
+        }
+    }
+
+    @GetMapping("/mydeposits")
+    public ResponseEntity<?> myDeposits(@RequestHeader("Authorization") String token, @RequestHeader(value = "currPage") Integer currPage, @RequestHeader(value = "pageSize") Integer pageSize){
+        String t = token.substring(7);
+        Claims claims = jwtUtils.extractAllClaims(t);
+        String userid = claims.get("userid", String.class);
+        return userService.myDeposits(userid,currPage,pageSize);
     }
 }

@@ -2,21 +2,22 @@ package com.edsom.EraPay.ServiceImpl;
 
 import com.edsom.EraPay.Dtos.UserRegDto;
 import com.edsom.EraPay.Entities.*;
-import com.edsom.EraPay.Enums.CardNetwork;
-import com.edsom.EraPay.Enums.CardStatus;
-import com.edsom.EraPay.Enums.UserStatus;
-import com.edsom.EraPay.Enums.UserType;
+import com.edsom.EraPay.Enums.*;
 import com.edsom.EraPay.GlobalUtils.ResponseUtil;
 import com.edsom.EraPay.Repos.*;
 import com.edsom.EraPay.Service.Admin;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import jakarta.persistence.criteria.*;
+
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,7 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import org.springframework.data.jpa.domain.Specification;
 
 @Service
 public class Adminimpl implements Admin {
@@ -45,6 +45,8 @@ public class Adminimpl implements Admin {
     CardRepo cardRepo;
     @Autowired
     CardTypeRepo typeRepo;
+    @Autowired
+    DepositCoinsRepo depositRepo;
 
     private String generateUserId(String adhaar) {
         if (adhaar == null || adhaar.length() != 12 || !adhaar.matches("\\d{12}")) {
@@ -203,6 +205,34 @@ public class Adminimpl implements Admin {
         Map<String, Object> resp = new HashMap<>();
         resp.put("success", true);
         return ResponseUtil.buildResponse("Wallet Updated", HttpStatus.OK, resp);
+    }
+
+    @Override
+    public ResponseEntity<?> depositList(Integer currPage, Integer pageSize) {
+        PageRequest pageRequest = PageRequest.of(currPage, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+        Page<DepositCoins> list = depositRepo.findAll(pageRequest);
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("success", true);
+        resp.put("date", list);
+        return ResponseUtil.buildResponse("Success", HttpStatus.OK, resp);
+    }
+
+    @Override
+    public ResponseEntity<?> changeDepositStatus(String id, DepositStaus status) {
+        Optional<DepositCoins> checkDeposit = depositRepo.findById(id);
+        if (checkDeposit.isPresent()){
+            DepositCoins depositCoins = checkDeposit.get();
+            depositCoins.setStatus(status);
+            depositRepo.save(depositCoins);
+            Map<String, Object> resp = new HashMap<>();
+            resp.put("sucess", true);
+            resp.put("data",depositCoins.getStatus());
+            return ResponseUtil.buildResponse("Status Changed..!!",HttpStatus.OK,resp);
+        }
+
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("sucess", false);
+        return ResponseUtil.buildResponse("Record Not Found..",HttpStatus.NO_CONTENT,resp);
     }
 
     // Generate a random 16-digit card number (Luhn Algorithm is not applied here)

@@ -26,6 +26,8 @@ public class EmailServiceImpl{
     @Autowired
     UserRepo userRepo;
 
+    @Value("${frontend.url}")
+    private String url;
 
     @Value("${spring.mail.username}")
     private String fromEmail;
@@ -45,7 +47,7 @@ public class EmailServiceImpl{
             String token = generateResetToken(user);
 
             // Password reset link (Frontend URL)
-            String resetLink = "https://test.erapay.biz/reset?token=" + token;
+            String resetLink = url+"/reset?token=" + token;
 
             subject = "\uD83D\uDE80 Welcome to Erapay! Secure Your Account Now";
           text = "Hi " + user.getName() + ",\n\n" +
@@ -60,7 +62,7 @@ public class EmailServiceImpl{
 
         } else if("forget".equals(purpose)){
             String token = generateResetToken(user);
-            String resetLink = "https://test.erapay.biz/reset?token=" + token;
+            String resetLink = url+"/reset?token=" + token;
             subject = "\uD83D\uDD11 Reset Your Password - Erapay";
             text = "Hi " + user.getName() + ",\n\n" +
                     "We received a request to reset your password for your Erapay account.\n" +
@@ -95,7 +97,7 @@ public class EmailServiceImpl{
         String token = generateResetToken(user);
 
         // Password reset link (Frontend URL)
-        String resetLink = "https://test.erapay.biz/reset?token=" + token;
+        String resetLink = url+"/reset?token=" + token;
 
 
 

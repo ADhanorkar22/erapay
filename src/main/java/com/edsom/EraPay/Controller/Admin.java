@@ -2,6 +2,7 @@ package com.edsom.EraPay.Controller;
 
 import com.edsom.EraPay.Dtos.UserRegDto;
 import com.edsom.EraPay.Enums.CardStatus;
+import com.edsom.EraPay.Enums.DepositStaus;
 import com.edsom.EraPay.Service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,16 @@ public class Admin {
     @PostMapping("/updateuserwallet")
     public ResponseEntity<?> updateUser(@RequestHeader(value = "userid") String userid, @RequestHeader(value = "amount") Double amount) {
         return  adminService.updateUserWallet(userid,amount);
+    }
+
+    @GetMapping("/depositlist")
+    public ResponseEntity<?> depositList(@RequestHeader(value = "currPage") Integer currPage, @RequestHeader(value = "pageSize") Integer pageSize){
+        return adminService.depositList(currPage,pageSize);
+    }
+
+    @PutMapping("/changedepositstatus")
+    public ResponseEntity<?> changeStatus(@RequestHeader(value = "id")String id, @RequestHeader(value = "status")DepositStaus status){
+        return adminService.changeDepositStatus(id, status);
     }
 
 

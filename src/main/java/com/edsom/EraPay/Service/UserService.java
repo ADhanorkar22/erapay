@@ -1,5 +1,6 @@
 package com.edsom.EraPay.Service;
 
+import com.edsom.EraPay.Dtos.DepositCoinsDto;
 import com.edsom.EraPay.Dtos.FundTransferDto;
 import com.edsom.EraPay.Dtos.UserRegDto;
 import com.edsom.EraPay.Dtos.UserUpdateDto;
@@ -27,4 +28,6 @@ public interface UserService {
     ResponseEntity<?> myCard(String userid);
     ResponseEntity<?> forgetPassword(String email);
     ResponseEntity<?>getUsersCount();
+    ResponseEntity<?> depositCoins(String userid, DepositCoinsDto dto, String url);
+    ResponseEntity<?> myDeposits(String userid, Integer currPage, Integer pageSize);
 }
