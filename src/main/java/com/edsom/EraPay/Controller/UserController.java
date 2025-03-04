@@ -12,12 +12,16 @@ import com.edsom.EraPay.ServiceImpl.EmailServiceImpl;
 import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,7 +46,7 @@ public class UserController {
     @Autowired
     JwtUtils jwtUtils;
 
-    private static final String UPLOADED_FOLDER = "uploads/tickets/";
+    private static final String UPLOADED_FOLDER = "var/erapay/screenshots/";
     private Long ticketId;
 
     @GetMapping("/checkemail")
@@ -143,10 +147,8 @@ public class UserController {
             // Get the file name and path
             String fileName = file.getOriginalFilename();
             Path uploadbankReceipt = Paths.get(UPLOADED_FOLDER + fileName); // Save the file to the specified
-
             // Save file path
             Files.write(uploadbankReceipt, file.getBytes());
-
             return userService.depositCoins(userid, depositDto, fileName);
         } catch (Exception e) {
             Map<String, Object> resp = new HashMap<>();
@@ -162,5 +164,21 @@ public class UserController {
         Claims claims = jwtUtils.extractAllClaims(t);
         String userid = claims.get("userid", String.class);
         return userService.myDeposits(userid,currPage,pageSize);
+    }
+
+    @GetMapping("/screenshots/{filename:.+}")
+    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+        Path file = Paths.get(UPLOADED_FOLDER).resolve(filename);
+        try {
+            Resource resource = new UrlResource(file.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_TYPE, Files.probeContentType(file))
+                        .body(resource);
+            }
+            throw new RuntimeException("Could not read file");
+        } catch (IOException e) {
+            throw new RuntimeException("Error: " + e.getMessage());
+        }
     }
 }
