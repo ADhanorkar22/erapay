@@ -19,8 +19,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -228,7 +231,13 @@ public class Adminimpl implements Admin {
             depositRepo.save(depositCoins);
             if (status.equals(DepositStaus.COMPLETED)){
                 updateUserWallet(depositCoins.getUser().getUserId(),amount);
-                TransferCoins transferCoins = new TransferCoins("",amount,depositCoins.getCoins(),depositCoins.getUser());
+                // Formatting the LocalDateTime to include date, time, and microseconds
+                Instant instant = Instant.now();
+                LocalDateTime dateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSSSSS");
+                String formattedDateTime = dateTime.format(formatter);
+                String txnid = "ERAPAYTXN" + depositCoins.getUser().getUserId() + formattedDateTime;
+                TransferCoins transferCoins = new TransferCoins(txnid, amount, depositCoins.getCoins(), depositCoins.getUser());
                 transferCoinsRepo.save(transferCoins);
             }
             Map<String, Object> resp = new HashMap<>();

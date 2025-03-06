@@ -11,7 +11,6 @@ public class DepositCoins {
 
     @Id
     private String id;
-
     private Double coins;
     private LocalDateTime depositTime;
     private String depositedFromWallet;
