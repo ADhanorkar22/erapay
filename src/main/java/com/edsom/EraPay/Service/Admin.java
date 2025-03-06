@@ -15,5 +15,5 @@ public interface Admin {
     ResponseEntity<?> allCards(Integer currPage, Integer pageSize);
     ResponseEntity<?> updateUserWallet(String userid, double amount);
     ResponseEntity<?> depositList(Integer currPage, Integer pageSize);
-    ResponseEntity<?> changeDepositStatus(String id, DepositStaus staus);
+    ResponseEntity<?> changeDepositStatus(String id, DepositStaus staus, Double amount);
 }

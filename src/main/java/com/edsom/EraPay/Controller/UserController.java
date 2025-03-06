@@ -16,6 +16,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -133,8 +134,8 @@ public class UserController {
     return userService.getUsersCount();
 }
 
-    @PostMapping("/depositcoins")
-    public ResponseEntity<?> depositCoins(@RequestHeader("Authorization") String token, @Valid @RequestBody DepositCoinsDto depositDto,
+    @PostMapping(value = "/depositcoins")
+    public ResponseEntity<?> depositCoins(@RequestHeader("Authorization") String token, @ModelAttribute @Valid  DepositCoinsDto depositDto,
                                           @RequestPart("screenshot") MultipartFile file) {
         String t = token.substring(7);
         Claims claims = jwtUtils.extractAllClaims(t);
@@ -146,6 +147,7 @@ public class UserController {
             }
             // Get the file name and path
             String fileName = file.getOriginalFilename();
+            System.out.println(fileName);
             Path uploadbankReceipt = Paths.get(UPLOADED_FOLDER + fileName); // Save the file to the specified
             // Save file path
             Files.write(uploadbankReceipt, file.getBytes());

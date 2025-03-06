@@ -47,6 +47,8 @@ public class Adminimpl implements Admin {
     CardTypeRepo typeRepo;
     @Autowired
     DepositCoinsRepo depositRepo;
+    @Autowired
+    TransferCoinsRepo transferCoinsRepo;
 
     private String generateUserId(String adhaar) {
         if (adhaar == null || adhaar.length() != 12 || !adhaar.matches("\\d{12}")) {
@@ -218,12 +220,17 @@ public class Adminimpl implements Admin {
     }
 
     @Override
-    public ResponseEntity<?> changeDepositStatus(String id, DepositStaus status) {
+    public ResponseEntity<?> changeDepositStatus(String id, DepositStaus status, Double amount) {
         Optional<DepositCoins> checkDeposit = depositRepo.findById(id);
         if (checkDeposit.isPresent()){
             DepositCoins depositCoins = checkDeposit.get();
             depositCoins.setStatus(status);
             depositRepo.save(depositCoins);
+            if (status.equals(DepositStaus.COMPLETED)){
+                updateUserWallet(depositCoins.getUser().getUserId(),amount);
+                TransferCoins transferCoins = new TransferCoins("",amount,depositCoins.getCoins(),depositCoins.getUser());
+                transferCoinsRepo.save(transferCoins);
+            }
             Map<String, Object> resp = new HashMap<>();
             resp.put("sucess", true);
             resp.put("data",depositCoins.getStatus());

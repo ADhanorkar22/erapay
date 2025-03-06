@@ -1,10 +1,8 @@
 package com.edsom.EraPay.Controller;
 
-import com.edsom.EraPay.Dtos.UserRegDto;
 import com.edsom.EraPay.Enums.CardStatus;
 import com.edsom.EraPay.Enums.DepositStaus;
 import com.edsom.EraPay.Service.UserService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,8 +58,8 @@ public class Admin {
     }
 
     @PutMapping("/changedepositstatus")
-    public ResponseEntity<?> changeStatus(@RequestHeader(value = "id")String id, @RequestHeader(value = "status")DepositStaus status){
-        return adminService.changeDepositStatus(id, status);
+    public ResponseEntity<?> changeStatus(@RequestHeader(value = "id")String id, @RequestHeader(value = "status")DepositStaus status, @RequestHeader(value = "amount")Double amount){
+        return adminService.changeDepositStatus(id, status, amount);
     }
 
 
